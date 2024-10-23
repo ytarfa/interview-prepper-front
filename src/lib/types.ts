@@ -1,8 +1,15 @@
 export interface Session {
   id: string
-  title: string
-  date: string
-  duration: string
-  progress: "Not Started" | "In Progress" | "Completed"
-  lastMessage?: string
+  messages: Message[]
+}
+
+export interface Message {
+  id: string
+  content: string
+  type: MessageType
+}
+
+export enum MessageType {
+  User = "user",
+  Bot = "bot",
 }

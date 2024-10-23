@@ -1,12 +1,4 @@
-// services/sessions-service.tsx
-export interface Session {
-  id: string
-  title: string
-  date: string
-  duration: string
-  progress: "Not Started" | "In Progress" | "Completed"
-  lastMessage?: string
-}
+import { Session } from "./types"
 
 export class SessionsService {
   private baseUrl: string
@@ -44,14 +36,13 @@ export class SessionsService {
   }
 
   // Create
-  async createSession(session: Partial<Session>): Promise<Session> {
+  async createSession(): Promise<Session> {
     try {
       const response = await fetch(`${this.baseUrl}/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(session),
       })
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

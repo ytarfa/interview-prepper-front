@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card"
 import { SessionsService } from "@/lib/sessions-service"
 import { Session } from "@/lib/types"
+
 import { ArrowRight, Clock, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback, useState } from "react"
@@ -23,12 +24,7 @@ export function SessionsList({ initialSessions }: Props) {
   const handleCreateSession = useCallback(async () => {
     try {
       const sessionsService = new SessionsService()
-      const newSession = await sessionsService.createSession({
-        title: "New Interview Session",
-        date: new Date().toISOString(),
-        duration: "0 mins",
-        progress: "Not Started",
-      })
+      const newSession = await sessionsService.createSession()
       setSessions((prev) => [...prev, newSession])
       router.push(`/sessions/${newSession.id}`)
     } catch (error) {
@@ -52,15 +48,15 @@ export function SessionsList({ initialSessions }: Props) {
               <div className='flex justify-between items-start'>
                 <div>
                   <CardTitle className='text-xl mb-2'>
-                    {session.title}
+                    Interview Session
                   </CardTitle>
                   <CardDescription>
                     <div className='flex items-center gap-2 mb-1'>
                       <Clock className='w-4 h-4' />
-                      <span>{session.duration}</span>
+                      <span>Duration</span>
                     </div>
                     <div className='text-sm text-muted-foreground'>
-                      {new Date(session.date).toLocaleDateString()}
+                      {new Date().toLocaleDateString()}
                     </div>
                   </CardDescription>
                 </div>
