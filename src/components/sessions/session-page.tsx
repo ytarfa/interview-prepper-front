@@ -1,27 +1,36 @@
 "use client"
+import { api } from "@/lib/api-client"
+import { MessageType, Session } from "@/lib/types"
 import { ChevronLeft, ChevronRight, Send } from "lucide-react"
-import { useState } from "react"
+import { useParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Button } from "../ui/button"
 import { Card, CardContent } from "../ui/card"
 import { Input } from "../ui/input"
 
 export const SessionPage = () => {
+  const params = useParams()
   const [showInfo, setShowInfo] = useState(false)
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      content:
-        "Hello! I'm your interview prep assistant. What role are you preparing for?",
-      isBot: true,
-    },
-    {
-      id: 2,
-      content: "I'm preparing for a frontend developer position",
-      isBot: false,
-    },
-  ])
+  const [session, setSession] = useState<Session | null>(null)
 
-  return (
+  useEffect(() => {
+    async function fetchSession() {
+      if (!params.id) return
+      console.log(params.id)
+      try {
+        const session = await api.getSession(params.id as string)
+        setSession(session)
+      } catch (error) {
+        console.error("Failed to fetch session:", error)
+        // Add your error handling here
+      }
+    }
+    if (session == null) {
+      fetchSession()
+    }
+  }, [params.id, session])
+
+  return session ? (
     <div className='h-screen flex flex-col'>
       <div className='flex-none p-4 border-b'>
         <h1 className='text-2xl font-bold'>Frontend Developer Interview</h1>
@@ -36,16 +45,18 @@ export const SessionPage = () => {
         >
           {/* Messages Area */}
           <div className='flex-1 overflow-y-auto p-4'>
-            {messages.map((message) => (
+            {session.messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${
-                  message.isBot ? "justify-start" : "justify-end"
+                  message.type === MessageType.Bot
+                    ? "justify-start"
+                    : "justify-end"
                 } mb-4`}
               >
                 <div
                   className={`max-w-[80%] p-3 rounded-lg ${
-                    message.isBot
+                    message.type === MessageType.Bot
                       ? "bg-secondary text-secondary-foreground"
                       : "bg-primary text-primary-foreground"
                   }`}
@@ -109,5 +120,5 @@ export const SessionPage = () => {
         )}
       </div>
     </div>
-  )
+  ) : null
 }

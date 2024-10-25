@@ -1,5 +1,5 @@
 import { Session } from "@/lib/types"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 const fetchSessionFromDatabase = async (id: string): Promise<Session> => {
   const response = await fetch(
@@ -11,12 +11,13 @@ const fetchSessionFromDatabase = async (id: string): Promise<Session> => {
   return response.json()
 }
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const session = await fetchSessionFromDatabase(params.id)
-    if (!session) {
-      return NextResponse.json({ error: "Session not found" }, { status: 404 })
-    }
+    const { id } = await params
+    const session = await fetchSessionFromDatabase(id)
     return NextResponse.json(session)
   } catch (error) {
     return NextResponse.json(
