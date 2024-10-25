@@ -1,5 +1,5 @@
 export interface Session {
-  id: string
+  session_id: string
   messages: Message[]
 }
 

@@ -15,7 +15,7 @@ import { useCallback, useEffect, useState } from "react"
 
 export function SessionsList() {
   const router = useRouter()
-  const [sessions, setSessions] = useState<Session[]>([])
+  const [sessions, setSessions] = useState<Session[] | null>(null)
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -27,8 +27,9 @@ export function SessionsList() {
         // Add your error handling here
       }
     }
-
-    fetchSessions()
+    if (sessions === null) {
+      fetchSessions()
+    }
   })
 
   const handleCreateSession = useCallback(async () => {
@@ -41,18 +42,18 @@ export function SessionsList() {
       console.error("Failed to create session:", error)
       // Add your error handling here
     }
-  }, [router])
+  }, [])
 
-  return (
+  return sessions ? (
     <div className='container mx-auto p-8'>
       <h1 className='text-3xl font-bold mb-8'>Your Interview Sessions</h1>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {sessions.map((session) => (
           <Card
-            key={session.id}
+            key={session.session_id}
             className='hover:shadow-lg transition-shadow cursor-pointer'
-            onClick={() => router.push(`/sessions/${session.id}`)}
+            onClick={() => router.push(`/sessions/${session.session_id}`)}
           >
             <CardHeader>
               <div className='flex justify-between items-start'>
@@ -91,5 +92,5 @@ export function SessionsList() {
         </Card>
       </div>
     </div>
-  )
+  ) : null
 }
