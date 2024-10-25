@@ -6,27 +6,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { SessionsService } from "@/lib/sessions-service"
+import { api } from "@/lib/api-client"
 import { Session } from "@/lib/types"
 
 import { ArrowRight, Clock, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
-interface Props {
-  initialSessions: Session[]
-}
-
-export function SessionsList({ initialSessions }: Props) {
+export function SessionsList() {
   const router = useRouter()
-  const [sessions, setSessions] = useState(initialSessions)
+  const [sessions, setSessions] = useState<Session[]>([])
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const sessions = await api.getSessions()
+        setSessions(sessions)
+      } catch (error) {
+        console.error("Failed to fetch sessions:", error)
+        // Add your error handling here
+      }
+    }
+
+    fetchSessions()
+  })
 
   const handleCreateSession = useCallback(async () => {
     try {
-      const sessionsService = new SessionsService()
-      const newSession = await sessionsService.createSession()
-      setSessions((prev) => [...prev, newSession])
-      router.push(`/sessions/${newSession.id}`)
+      const newSession = await api.createSession()
+      console.log(newSession)
+      // setSessions((prev) => [...prev, newSession])
+      // router.push(`/sessions/${newSession.id}`)
     } catch (error) {
       console.error("Failed to create session:", error)
       // Add your error handling here
